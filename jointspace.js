@@ -20,6 +20,8 @@ module.exports = function(RED) {
     "use strict";
 
     const ambilight = require('ambilight');
+    const spawn     = require('child_process').spawn;
+    const plat      = require('os').platform();
 
     /******************************************************************************************************************
 	 * 
@@ -35,6 +37,19 @@ module.exports = function(RED) {
         this.api        = new ambilight.AmbilightApi(this.host, this.timeout);
 
         var node = this;
+
+        // https://github.com/node-red/node-red-nodes/blob/master/io/ping/88-ping.js
+        var ex;
+
+        if (plat == "linux" || plat == "android") { 
+            ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]); 
+        } else if (plat.match(/^win/)) { 
+            ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]); 
+        } else if (plat == "darwin" || plat == "freebsd") { 
+            ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]); 
+        } else { 
+            node.error("Sorry - your platform - "+plat+" - is not recognised."); 
+        }
 
         /******************************************************************************************************************
          * functions called by our 'clients'
