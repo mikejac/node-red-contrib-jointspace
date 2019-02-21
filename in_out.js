@@ -25,7 +25,7 @@ module.exports = function(RED) {
 	 * 
 	 *
 	 */
-    function jointSPACEInNode(config) {
+    function jointSPACEGetNode(config) {
         RED.nodes.createNode(this, config);
 
         this.client     = config.client;
@@ -203,13 +203,13 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("jointspace in", jointSPACEInNode);
+    RED.nodes.registerType("jointspace get", jointSPACEGetNode);
 
     /******************************************************************************************************************
 	 * 
 	 *
 	 */
-    function jointSPACEOutNode(config) {
+    function jointSPACESetNode(config) {
         RED.nodes.createNode(this, config);
 
         this.client     = config.client;
@@ -387,5 +387,5 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("jointspace out", jointSPACEOutNode);
+    RED.nodes.registerType("jointspace set", jointSPACESetNode);
 }

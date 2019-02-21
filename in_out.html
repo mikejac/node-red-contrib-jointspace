@@ -19,24 +19,25 @@
 <!--
     In
 -->
-<script type="text/x-red" data-template-name="jointspace in">
+<script type="text/x-red" data-template-name="jointspace get">
     <div class="form-row">
         <label for="node-input-client"><i class="fa fa-globe"></i> <span data-i18n="in_out.label.client"></span></label>
         <input type="text" id="node-input-client">
     </div>
 
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="outlet.label.name"></span></label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="in_out.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]in_out.placeholder.name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="jointspace in">
+<script type="text/x-red" data-help-name="jointspace get">
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('jointspace in', {
-        category: 'input',
+    RED.nodes.registerType('jointspace get', {
+        category: 'jointSPACE-function',
+        paletteLabel: 'Get',
         defaults: {
             client: {
                 type: "jointspace-client", required: true
@@ -45,7 +46,7 @@
                 value: ""
             }
         },
-        inputs: 0,
+        inputs: 1,
         outputs: 1,
         color:"#d8bfd8",
         icon: "bridge.png",
@@ -61,24 +62,25 @@
 <!--
     Out
 -->
-<script type="text/x-red" data-template-name="jointspace out">
+<script type="text/x-red" data-template-name="jointspace set">
     <div class="form-row">
         <label for="node-input-client"><i class="fa fa-globe"></i> <span data-i18n="in_out.label.client"></span></label>
         <input type="text" id="node-input-client">
     </div>
 
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="outlet.label.name"></span></label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="in_out.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]in_out.placeholder.name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="jointspace out">
+<script type="text/x-red" data-help-name="jointspace set">
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('jointspace out', {
-        category: 'output',
+    RED.nodes.registerType('jointspace set', {
+        category: 'jointSPACE-function',
+        paletteLabel: 'Set',
         defaults: {
             client: {
                 type: "jointspace-client", required: true
@@ -88,7 +90,7 @@
             }
         },
         inputs: 1,
-        outputs: 0,
+        outputs: 1,
         color:"#d8bfd8",
         icon: "bridge.png",
         label: function() {
