@@ -1,0 +1,23 @@
+{
+    "jointspace": {
+        "label": {
+            "host": "Host IP",
+            "timeout": "Timeout (ms)",
+            "name": "Name"
+        },
+        "placeholder": {
+            "host": "e.g. 192.168.1.10",
+            "timeout": 3000,
+            "name": "Name"
+        },
+        "state": {
+            "connected": "Connected to host: __host__",
+            "disconnected": "Disconnected from host: __host__",
+            "connect-failed": "Connection failed to host: __host__"
+        },
+        "errors": {
+            "missing-config": "missing host configuration",
+            "missing-bridge": "missing host"
+        }
+    }
+}

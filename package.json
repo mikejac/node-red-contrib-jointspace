@@ -1,0 +1,40 @@
+{
+  "name": "node-red-contrib-jointspace",
+  "version": "0.0.1",
+  "description": "jointSPACE",
+  "main": "jointspace.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikejac/node-red-contrib-jointspace.git"
+  },
+  "keywords": [
+    "jointSPACE",
+    "philips",
+    "tv",
+    "iot"
+  ],
+  "node-red": {
+    "nodes": {
+      "jointspace": "jointspace.js",
+      "in_out": "in_out.js"
+    }
+  },
+  "author": {
+    "name": "Michael Jacobsen"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/mikejac/node-red-contrib-jointspace/issues"
+  },
+  "homepage": "https://github.com/mikejac/node-red-contrib-jointspace#readme",
+  "dependencies": {
+    "ambilight": "^0.2.x"
+  },
+  "maintainers": [
+    {
+      "name": "mikejac",
+      "email": "michael@visbyjacobsen.dk"
+    }
+  ]
+}

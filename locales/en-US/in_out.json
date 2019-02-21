@@ -1,0 +1,15 @@
+{
+    "in_out": {
+        "label": {
+            "name": "Name",
+            "client": "jointSPACE Client"
+        },
+        "placeholder": {
+            "name": "Name"
+        },
+        "errors": {
+            "missing-config": "Missing jointSPACE configuration",
+            "missing-bridge": "Missing jointSPACE"
+        }
+    }
+}
