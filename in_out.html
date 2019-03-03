@@ -17,7 +17,7 @@
 -->
 
 <!--
-    In
+    Get
 -->
 <script type="text/x-red" data-template-name="jointspace get">
     <div class="form-row">
@@ -32,6 +32,15 @@
 </script>
 
 <script type="text/x-red" data-help-name="jointspace get">
+    SOURCES<br>
+    CURRENTSOURCE<br>
+    SYSTEM<br>
+    SYSTEMCOUNTRY<br>
+    SYSTEMNAME<br>
+    SYSTEMMENULANGUAGE<br>
+    SYSTEMMODEL<br>
+    SYSTEMSERIALNUMBER<br>
+    SYSTEMSOFTWAREVERSION<br>
 </script>
 
 <script type="text/javascript">
@@ -60,7 +69,7 @@
 </script>
 
 <!--
-    Out
+    Set
 -->
 <script type="text/x-red" data-template-name="jointspace set">
     <div class="form-row">
@@ -96,6 +105,140 @@
         align: "right",
         label: function() {
             return this.name || "jointSPACE set";
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : ""
+        }
+    })
+</script>
+
+<!--
+    Power
+-->
+<script type="text/x-red" data-template-name="jointspace power">
+    <div class="form-row">
+        <label for="node-input-client"><i class="fa fa-globe"></i> <span data-i18n="in_out.label.client"></span></label>
+        <input type="text" id="node-input-client">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="in_out.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]in_out.placeholder.name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="jointspace power">
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('jointspace power', {
+        category: 'jointSPACE-function',
+        paletteLabel: 'Power',
+        defaults: {
+            client: {
+                type: "jointspace-client", required: true
+            },
+            name: {
+                value: ""
+            }
+        },
+        inputs: 1,
+        outputs: 1,
+        color:"#d8bfd8",
+        icon: "bridge.png",
+        align: "right",
+        label: function() {
+            return this.name || "jointSPACE power";
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : ""
+        }
+    })
+</script>
+
+<!--
+    Key
+-->
+<script type="text/x-red" data-template-name="jointspace key">
+    <div class="form-row">
+        <label for="node-input-client"><i class="fa fa-globe"></i> <span data-i18n="in_out.label.client"></span></label>
+        <input type="text" id="node-input-client">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="in_out.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]in_out.placeholder.name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="jointspace key">
+    Back<br>
+    Find<br>
+    RedColour<br>
+    GreenColour<br>
+    YellowColour<br>
+    BlueColour<br>
+    Home<br>
+    VolumeUp<br>
+    VolumeDown<br>
+    Mute<br>
+    Options<br>
+    Dot<br>
+    Digit0<br>
+    Digit1<br>
+    Digit2<br>
+    Digit3<br>
+    Digit4<br>
+    Digit5<br>
+    Digit6<br>
+    Digit7<br>
+    Digit8<br>
+    Digit9<br>
+    Info<br>
+    CursorUp<br>
+    CursorDown<br>
+    CursorLeft<br>
+    CursorRight<br>
+    Confirm<br>
+    Next<br>
+    Previous<br>
+    Adjust<br>
+    WatchTV<br>
+    Viewmode<br>
+    Teletext<br>
+    Subtitle<br>
+    ChannelStepUp<br>
+    ChannelStepDown<br>
+    Source<br>
+    AmbilightOnOff<br>
+    PlayPause<br>
+    Pause<br>
+    FastForward<br>
+    Stop<br>
+    Rewind<br>
+    Record<br>
+    Online<br>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('jointspace key', {
+        category: 'jointSPACE-function',
+        paletteLabel: 'Key',
+        defaults: {
+            client: {
+                type: "jointspace-client", required: true
+            },
+            name: {
+                value: ""
+            }
+        },
+        inputs: 1,
+        outputs: 1,
+        color:"#d8bfd8",
+        icon: "bridge.png",
+        align: "right",
+        label: function() {
+            return this.name || "jointSPACE key";
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : ""

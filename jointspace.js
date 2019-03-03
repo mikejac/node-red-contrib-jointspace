@@ -1,6 +1,6 @@
 /**
- * NodeRED Google jointSPACE
- * Copyright (C) 2018 Michael Jacobsen.
+ * NodeRED jointSPACE
+ * Copyright (C) 2019 Michael Jacobsen.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 module.exports = function(RED) {
     "use strict";
 
-    const ambilight = require('ambilight');
+    const ambilight = require('./lib/index');
     const spawn     = require('child_process').spawn;
     const plat      = require('os').platform();
 
@@ -30,26 +30,76 @@ module.exports = function(RED) {
     function jointSPACENode(config) {
         RED.nodes.createNode(this, config);
 
-        //this.mgmtNodes = {};
-
-        this.host       = config.host;
-        this.timeout    = config.timeout;
-        this.api        = new ambilight.AmbilightApi(this.host, this.timeout);
+        this.clients        = {};
+        this.pingInterval   = 3 * 1000;
+        this._isOn          = -1;
+        this.host           = config.host;
+        this.timeout        = parseInt(config.timeout, 10);
+        this.api            = new ambilight.AmbilightApi(this.host, this.timeout);
 
         var node = this;
 
-        // https://github.com/node-red/node-red-nodes/blob/master/io/ping/88-ping.js
-        var ex;
+        /******************************************************************************************************************
+         * ping
+         * https://github.com/node-red/node-red-nodes/blob/master/io/ping/88-ping.js
+         */
+        node.pinger = setInterval(function() {
+            var ex;
 
-        if (plat == "linux" || plat == "android") { 
-            ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]); 
-        } else if (plat.match(/^win/)) { 
-            ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]); 
-        } else if (plat == "darwin" || plat == "freebsd") { 
-            ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]); 
-        } else { 
-            node.error("Sorry - your platform - "+plat+" - is not recognised."); 
-        }
+            if (plat == "linux" || plat == "android") {
+                ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]); 
+            } else if (plat.match(/^win/)) { 
+                ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]); 
+            } else if (plat == "darwin" || plat == "freebsd") { 
+                ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]); 
+            } else { 
+                RED.log.error("Sorry - your platform - " + plat + " - is not recognised."); 
+            }
+
+            var fail  = false;
+
+            ex.stdout.on('data', function (data) {
+                //RED.log.debug("jointSPACENode(pinger/data): data = " + data);
+            });
+
+            ex.on('error', function (err) {
+                fail = true;
+                if (err.code === "ENOENT") {
+                    RED.log.error(err.code + " ping command not found");
+                } else if (err.code === "EACCES") {
+                    RED.log.error(err.code + " can't run ping command");
+                } else {
+                    RED.log.error(err.code);
+                }
+            });
+        
+            ex.on('close', function (code) {
+                if (fail) { 
+                    fail = false; 
+                    return; 
+                }
+
+                if (code === 0) {
+                    if (node._isOn != 1) {
+                        RED.log.debug("jointSPACENode(pinger): On");
+                        node._isOn = 1;
+
+                        Object.keys(node.clients).forEach(function(k, i) {
+                            node.clients[k].updated(true);
+                        });
+                    }
+                } else {
+                    if (node._isOn != 0) {
+                        RED.log.debug("jointSPACENode(pinger): Off");
+                        node._isOn = 0;
+
+                        Object.keys(node.clients).forEach(function(k, i) {
+                            node.clients[k].updated(false);
+                        });
+                    }
+                }
+            });
+        }, node.pingInterval);
 
         /******************************************************************************************************************
          * functions called by our 'clients'
@@ -58,109 +108,40 @@ module.exports = function(RED) {
         this.register = function(client, type) {
             RED.log.debug("jointSPACENode(): register; type = " + type);
 
-            //let states = {};
-
-            switch (type) {
-                case 'in':
-                    //states = node.app.NewLightOnOff(client, name);
-                    break;
-
-                case 'out':
-                    //states = node.app.NewLightDimmable(client, name);
-                    break;
-            }
-
+            node.clients[client.id] = client;
             return node.api;
         };
 
         this.deregister = function(client, type) {
             RED.log.debug("jointSPACENode(): deregister; type = " + type);
 
-            /*if (type === 'mgmt' && node.mgmtNodes[client.id]) {
-                delete node.mgmtNodes[client.id];
-            }*/
+            delete node.clients[client.id];
         };
 
         this.remove = function(client, type) {
             RED.log.debug("jointSPACENode(): remove; type = " + type);
 
-            /*if (type === 'mgmt' && node.mgmtNodes[client.id]) {
-                delete node.mgmtNodes[client.id];
-            } else {
-                node.app.DeleteDevice(client);
-            }*/
+            delete node.clients[client.id];
         };
 
-        /*this.setState = function(client, state) {
-            RED.log.debug("GoogleSmartHomeNode:setState(): state = " + JSON.stringify(state));
-            node.app.SetState(client.id, state);
-        };*/
+        this.isOn = function() {
+            if (node._isOn == 1) {
+                return true;
+            } else {
+                return false;
+            }
+        };
 
         this.on('close', function(removed, done) {
-            //node.app.Stop(done);
-            
             if (removed) {
                 // this node has been deleted
             } else {
                 // this node is being restarted
                 RED.log.debug("jointSPACENode(on-close): restarting");
             }
+
+            done();
         });
-
-        /******************************************************************************************************************
-         * notifications coming from the application server
-         *
-         */
-        /*this.app.on('server', function(state, param1) {
-            RED.log.debug("GoogleSmartHomeNode(on-server): state  = " + state);
-            RED.log.debug("GoogleSmartHomeNode(on-server): param1 = " + param1);
-
-            node.callMgmtFuncs({
-                _type: 'server',
-                state: state,
-                param1: param1
-            });
-        });*/
-
-        /*this.app.on('actions-reportstate', function(msg) {
-            RED.log.debug("GoogleSmartHomeNode(on-actions-reportstate): msg = " + JSON.stringify(msg));
-
-            node.callMgmtFuncs({
-                _type: 'actions-reportstate',
-                msg: msg
-            });
-        });*/
-
-        /*this.app.on('actions-requestsync', function(msg) {
-            RED.log.debug("GoogleSmartHomeNode(on-actions-requestsync): msg = " + JSON.stringify(msg));
-
-            node.callMgmtFuncs({
-                _type: 'actions-requestsync',
-                msg: msg
-            });
-        });*/
-
-        /*this.app.on('/login', function(msg, username, password) {
-            RED.log.debug("GoogleSmartHomeNode(on-login): msg      = " + msg);
-            RED.log.debug("GoogleSmartHomeNode(on-login): username = " + username);
-            RED.log.debug("GoogleSmartHomeNode(on-login): password = " + password);
-
-            node.callMgmtFuncs({
-                _type: 'login',
-                msg: msg
-            });
-        });*/
-
-        // call all management nodes
-        /*this.callMgmtFuncs = function(obj) {
-            Object.keys(node.mgmtNodes).forEach(function(key) {
-                if (node.mgmtNodes.hasOwnProperty(key)) {
-                    RED.log.debug("GoogleSmartHomeNode(on-server): found mgmt client");
-
-                    node.mgmtNodes[key].updated(obj);
-                }
-            });
-        };*/
     }
 
     RED.nodes.registerType("jointspace-client", jointSPACENode);
